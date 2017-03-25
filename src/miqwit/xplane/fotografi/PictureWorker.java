@@ -93,6 +93,7 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
       
       searchParams.setLatitude(longitude);
       searchParams.setLongitude(latitude);
+      searchParams.setRadius(20); // km
 
       System.out.println("Make call with " + latitude + " " + longitude);
       PhotosInterface photosInterface = this.flickr.getPhotosInterface();
@@ -162,11 +163,12 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
       Photo pdetail = photosInterface.getInfo(p.getId(), this.sharedSecret);
       System.out.println("Get Details done");
       String legend = String.format("%s - %s - %s (%s, %s)", 
-              pdetail.getCountry().getName(), 
-              pdetail.getLocality().getName(),
+              (pdetail.getCountry() != null) ? pdetail.getCountry().getName() : "",
+              (pdetail.getLocality() != null) ? pdetail.getLocality().getName() : "",
               pdetail.getDescription(), 
-              p.getOwner().getUsername(), 
-              pdetail.getDateTaken().toString());
+              (p.getOwner() != null) ? p.getOwner().getUsername() : "", 
+              (pdetail.getDateTaken() != null) ? pdetail.getDateTaken().toString() : ""
+      );
       jLegend.setText(legend);
       
     } catch (MalformedURLException ex) {
@@ -182,9 +184,19 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
       if (h == 0) {
         double rapport = ((double) srcImg.getHeight(null) / (double) srcImg.getWidth(null));
         h = (int) ((double) w * rapport);
+        
+        if (h > this.jLabelPicture.getHeight()) {
+          h = this.jLabelPicture.getHeight();
+          w = (int) ((double) h / rapport);
+        }
       } else if (w == 0) {
         double rapport = ((double) srcImg.getWidth(null) / (double) srcImg.getHeight(null));
         w = (int) ((double) h * rapport);
+        
+        if (w > this.jLabelPicture.getWidth()) {
+          w = this.jLabelPicture.getWidth();
+          h = (int) ((double) w * rapport);
+        }
       }
       BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
       Graphics2D g2 = resizedImg.createGraphics();

@@ -131,7 +131,7 @@ public class XplaneFotografi extends javax.swing.JFrame {
             .add(jLabel4)))
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-          .add(jTextFieldLatidude, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
+          .add(jTextFieldLatidude, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
           .add(jTextFieldLongitude))
         .addContainerGap())
     );
@@ -208,13 +208,13 @@ public class XplaneFotografi extends javax.swing.JFrame {
     jPanelPictureLayout.setHorizontalGroup(
       jPanelPictureLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(jLabelPictures, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-      .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+      .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
     );
     jPanelPictureLayout.setVerticalGroup(
       jPanelPictureLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(jPanelPictureLayout.createSequentialGroup()
-        .add(jLabelPictures, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 316, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .add(jLabelPictures, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
     );
 
@@ -243,14 +243,14 @@ public class XplaneFotografi extends javax.swing.JFrame {
       layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
         .addContainerGap()
-        .add(jTabbedPane1)
+        .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 471, Short.MAX_VALUE)
         .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(layout.createSequentialGroup()
         .addContainerGap()
-        .add(jTabbedPane1)
+        .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
         .addContainerGap())
     );
 
