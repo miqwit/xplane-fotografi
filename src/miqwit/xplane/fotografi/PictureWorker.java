@@ -19,12 +19,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingWorker;
@@ -38,17 +40,20 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
   private Date lastDateDL = null;
   private final String apiKey = "";
   private final String sharedSecret = "";
-  PhotoList<Photo> current_photos = new PhotoList<Photo>();
   private JLabel jLabelPicture = null;
   private int rotationTimeInSeconds = 0;
   private JTextField jLatitude = null;
   private JTextField jLongitude = null;
   private JTextPane jLegend = null;
   private Flickr flickr = null;
+  private JTextArea console = null;
+  
+  private PhotoList<Photo> current_photos = new PhotoList<Photo>();
+  private ArrayList<String> already_displayed = new ArrayList<String>();
   
   public PictureWorker(int timeSpanInMinutes, int rotationTimeInSeconds, 
           JLabel jLabelPicture, JTextField latitude, JTextField longitude,
-          JTextPane jLegend) {
+          JTextPane jLegend, JTextArea console) {
     this.timeSpanInMilliseconds = timeSpanInMinutes * 60 * 1000;
     this.jLabelPicture = jLabelPicture;
     this.rotationTimeInSeconds = rotationTimeInSeconds;
@@ -56,6 +61,7 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
     this.jLongitude = longitude;
     this.jLegend = jLegend;
     this.flickr = new Flickr(this.apiKey, this.sharedSecret, new REST());
+    this.console = console;
   }
   
   @Override
@@ -77,13 +83,12 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
     if ((this.lastDateDL != null)
             && (now.getTime() - this.lastDateDL.getTime() < this.timeSpanInMilliseconds)
             && this.current_photos.size() > 1) {
-      System.out.println("Do not download photos now");
+      this.console.append("Do not download photos now\n");
       return;
     }
     
     try {
-      System.out.println("Download photos now");
-      SearchParameters searchParams = new SearchParameters();
+      this.console.append("Download photos now\n");
       String longitude = this.jLongitude.getText().replace(",", ".").trim();
       String latitude = this.jLatitude.getText().replace(",", ".").trim();
       
@@ -91,15 +96,14 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
       float f1 = new Float(longitude);
       float f2 = new Float(latitude);
       
+      // Set params
+      SearchParameters searchParams = new SearchParameters();
       searchParams.setLatitude(longitude);
       searchParams.setLongitude(latitude);
       searchParams.setRadius(20); // km
-
-      System.out.println("Make call with " + latitude + " " + longitude);
-      PhotosInterface photosInterface = this.flickr.getPhotosInterface();
       
-      this.current_photos = photosInterface.search(searchParams, 10, 1);
-      System.out.println("Populated " + this.current_photos.size());
+      // Download pictures
+      this.downloadFreshPhotos(searchParams);
       
       // Update lastDate
       this.lastDateDL = new Date();
@@ -110,20 +114,68 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
     }
   }
   
+  /**
+   * Will call the Flickr API several times until new pictures (never been
+   * displayed before) are downloaded.
+   * Populates this.current_photos.
+   * @param searchParams
+   * @throws FlickrException 
+   */
+  private void downloadFreshPhotos(SearchParameters searchParams) throws FlickrException {
+    this.console.append("Make call with " + searchParams.getLatitude()
+            + " " + searchParams.getLongitude() + "\n");
+    PhotosInterface photosInterface = this.flickr.getPhotosInterface();
+
+    // Download fresh photos
+    boolean download_new_photos = true;
+    int page = 1;
+    PhotoList<Photo> previous_photos = new PhotoList<Photo>();
+    PhotoList<Photo> photos;
+
+    while (download_new_photos) {
+      photos = photosInterface.search(searchParams, 10, page);
+
+      // If no photos in this page, use previous photos
+      if (photos.size() == 0) {
+        photos = previous_photos;
+        break;
+      }
+
+      // Adds only to current_photos the photos not already displayed
+      for (Photo photo : photos) {
+        String id = photo.getId();
+        if (!this.already_displayed.contains(id)) {
+          this.current_photos.add(photo);
+        }
+      }
+
+      // If no photos added, try next page
+      if (this.current_photos.size() == 0) {
+        page++;
+        this.console.append("No new photos. Try page " + page + "\n");
+        previous_photos = photos;
+      } else {
+        download_new_photos = false;
+      }
+    }
+
+    this.console.append("Populated " + this.current_photos.size() + "\n");
+  }
+  
   public void displayNextPhoto() {
     while (this.current_photos.size() == 0) {
       try {
         if ("??".equals(this.jLatitude.getText())) {
-          System.out.println("Invalid latitude. Wait 1 second to get proper data");
+          this.console.append("Invalid latitude. Wait 1 second to get proper data\n");
           Thread.sleep(1000);
           continue;
         }
-        System.out.println("No photos in stock. Download more.");
+        this.console.append("No photos in stock. Download more.\n");
         this.getMorePictures();
 
         if (this.current_photos.size() == 0) {
           // No photo found. Wait 10 seconds and retry
-          System.out.println("No photos found.");
+          this.console.append("No photos found.\n");
           Thread.sleep(10000);
         }
       } catch (InterruptedException ex) {
@@ -135,6 +187,9 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
     Photo p = this.current_photos.get(0);
     this.current_photos.remove(0);
     
+    // Add this photo to already displayed
+    this.already_displayed.add(p.getId());
+    
     String url = p.getLargeUrl();
     try {
       URL url_I = new URL(url);
@@ -142,10 +197,10 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
       
       // Resize Image
       int w = this.jLabelPicture.getWidth();
-      int h = this.jLabelPicture.getWidth();
+      int h = this.jLabelPicture.getHeight();
       int iw = image.getWidth(null);
       int ih = image.getHeight(null);
-      Image image_resized = null;
+      Image image_resized;
       if ((w / h) > (iw / ih)) {
         // align on height
         image_resized = this.getScaledImage(image, 0, h);
@@ -158,10 +213,10 @@ public class PictureWorker extends SwingWorker<Void, Coordinates> {
       jLabelPicture.setIcon(new ImageIcon(image_resized));
       
       // Display legend
-      System.out.println("Get Details");
+      this.console.append("Get Details\n");
       PhotosInterface photosInterface = this.flickr.getPhotosInterface();
       Photo pdetail = photosInterface.getInfo(p.getId(), this.sharedSecret);
-      System.out.println("Get Details done");
+      this.console.append("Get Details done\n");
       String legend = String.format("%s - %s - %s (%s, %s)", 
               (pdetail.getCountry() != null) ? pdetail.getCountry().getName() : "",
               (pdetail.getLocality() != null) ? pdetail.getLocality().getName() : "",

@@ -34,7 +34,8 @@ import javax.swing.SwingWorker;
 import javax.swing.text.DefaultCaret;
 
 public class XplaneFotografi extends javax.swing.JFrame {
-    
+  private PictureWorker pictureWorker;  
+  
     /** Creates new form */
     public XplaneFotografi() {
       initComponents();
@@ -44,13 +45,14 @@ public class XplaneFotografi extends javax.swing.JFrame {
       DefaultCaret caret = (DefaultCaret) jTextAreaConsole.getCaret();
       caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-      SwingWorker udpWorker = new UdpWorker(ipFrom, udpPort, jTextAreaConsole, 
+      SwingWorker udpWorker = new UdpWorker(ipFrom, udpPort, jTextFieldSync, 
               jTextFieldLatidude, jTextFieldLongitude);
       udpWorker.execute();
 
-      PictureWorker pictureWorker = new PictureWorker(10, 30, jLabelPictures, 
-              jTextFieldLatidude, jTextFieldLongitude, jTextPaneLegend);
-      pictureWorker.execute();
+      this.pictureWorker = new PictureWorker(10, 30, jLabelPictures, 
+              jTextFieldLatidude, jTextFieldLongitude, jTextPaneLegend, 
+              jTextAreaConsole);
+      this.pictureWorker.execute();
     }
     
     /** This method is called from within the constructor to
@@ -65,13 +67,14 @@ public class XplaneFotografi extends javax.swing.JFrame {
     jPanel3 = new javax.swing.JPanel();
     jPanel1 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
-    jLabel2 = new javax.swing.JLabel();
     jTextFieldIpFrom = new javax.swing.JTextField();
-    jTextFieldUdpPort = new javax.swing.JTextField();
     jLabel4 = new javax.swing.JLabel();
     jTextFieldLatidude = new javax.swing.JTextField();
     jLabel5 = new javax.swing.JLabel();
     jTextFieldLongitude = new javax.swing.JTextField();
+    jTextFieldUdpPort = new javax.swing.JTextField();
+    jTextFieldSync = new javax.swing.JTextField();
+    jLabel2 = new javax.swing.JLabel();
     jPanel2 = new javax.swing.JPanel();
     jScrollPane1 = new javax.swing.JScrollPane();
     jTextAreaConsole = new javax.swing.JTextArea();
@@ -89,11 +92,7 @@ public class XplaneFotografi extends javax.swing.JFrame {
     jLabel1.setText("xPlane IP:");
     jLabel1.setToolTipText("");
 
-    jLabel2.setText("UDP Receiving Port:");
-
     jTextFieldIpFrom.setText("192.168.0.15");
-
-    jTextFieldUdpPort.setText("10000");
 
     jLabel4.setText("Latitude: ");
 
@@ -110,45 +109,63 @@ public class XplaneFotografi extends javax.swing.JFrame {
     jTextFieldLongitude.setEditable(false);
     jTextFieldLongitude.setText("??");
 
+    jTextFieldUdpPort.setText("10000");
+
+    jTextFieldSync.setEditable(false);
+    jTextFieldSync.setBackground(new java.awt.Color(255, 51, 51));
+    jTextFieldSync.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+    jTextFieldSync.setForeground(new java.awt.Color(255, 255, 255));
+    jTextFieldSync.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+    jTextFieldSync.setText("NOT SYNC");
+    jTextFieldSync.setBorder(null);
+    jTextFieldSync.setFocusable(false);
+    jTextFieldSync.setPreferredSize(new java.awt.Dimension(53, 14));
+
+    jLabel2.setText("Receiving on port:");
+
     org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(jPanel1Layout.createSequentialGroup()
-        .addContainerGap()
+        .add(18, 18, 18)
         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-          .add(jLabel2)
-          .add(jLabel1))
+          .add(jLabel1)
+          .add(jLabel2))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jTextFieldIpFrom)
+          .add(jTextFieldUdpPort))
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(jTextFieldSync, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 78, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel4)
+          .add(org.jdesktop.layout.GroupLayout.TRAILING, jLabel5))
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-          .add(jTextFieldIpFrom, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE)
-          .add(jTextFieldUdpPort))
-        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-          .add(jLabel5)
-          .add(jPanel1Layout.createSequentialGroup()
-            .add(8, 8, 8)
-            .add(jLabel4)))
-        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-          .add(jTextFieldLatidude, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
-          .add(jTextFieldLongitude))
+          .add(jTextFieldLongitude, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 108, Short.MAX_VALUE)
+          .add(jTextFieldLatidude))
         .addContainerGap())
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(jPanel1Layout.createSequentialGroup()
-        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-          .add(jLabel1)
-          .add(jTextFieldIpFrom, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-          .add(jLabel4)
-          .add(jTextFieldLatidude, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-          .add(jLabel2)
-          .add(jTextFieldUdpPort, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-          .add(jLabel5)
-          .add(jTextFieldLongitude, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)))
+        .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+          .add(jPanel1Layout.createSequentialGroup()
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(jLabel1)
+              .add(jTextFieldIpFrom, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jLabel4)
+              .add(jTextFieldLatidude, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+            .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+              .add(jLabel5)
+              .add(jTextFieldLongitude, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+              .add(jTextFieldUdpPort)
+              .add(jLabel2)))
+          .add(jTextFieldSync, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap())
     );
 
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Console"));
@@ -165,11 +182,11 @@ public class XplaneFotografi extends javax.swing.JFrame {
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
       jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-      .add(jScrollPane1)
+      .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE)
     );
     jPanel2Layout.setVerticalGroup(
       jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-      .add(jScrollPane1)
+      .add(org.jdesktop.layout.GroupLayout.TRAILING, jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
     );
 
     org.jdesktop.layout.GroupLayout jPanel3Layout = new org.jdesktop.layout.GroupLayout(jPanel3);
@@ -187,9 +204,9 @@ public class XplaneFotografi extends javax.swing.JFrame {
       jPanel3Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(jPanel3Layout.createSequentialGroup()
         .addContainerGap()
-        .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-        .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+        .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
         .addContainerGap())
     );
 
@@ -198,6 +215,11 @@ public class XplaneFotografi extends javax.swing.JFrame {
     jTabbedPane1.addTab("Settings", jPanel3);
 
     jLabelPictures.setToolTipText("");
+    jLabelPictures.addComponentListener(new java.awt.event.ComponentAdapter() {
+      public void componentResized(java.awt.event.ComponentEvent evt) {
+        jLabelPicturesComponentResized(evt);
+      }
+    });
 
     jTextPaneLegend.setEditable(false);
     jTextPaneLegend.setBackground(new java.awt.Color(240, 240, 240));
@@ -208,12 +230,12 @@ public class XplaneFotografi extends javax.swing.JFrame {
     jPanelPictureLayout.setHorizontalGroup(
       jPanelPictureLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(jLabelPictures, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-      .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
+      .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
     );
     jPanelPictureLayout.setVerticalGroup(
       jPanelPictureLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(jPanelPictureLayout.createSequentialGroup()
-        .add(jLabelPictures, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+        .add(jLabelPictures, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
         .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
         .add(jScrollPane2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 55, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
     );
@@ -241,16 +263,16 @@ public class XplaneFotografi extends javax.swing.JFrame {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-      .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+      .add(layout.createSequentialGroup()
         .addContainerGap()
-        .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 471, Short.MAX_VALUE)
+        .add(jTabbedPane1)
         .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
       .add(layout.createSequentialGroup()
         .addContainerGap()
-        .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
+        .add(jTabbedPane1)
         .addContainerGap())
     );
 
@@ -258,6 +280,10 @@ public class XplaneFotografi extends javax.swing.JFrame {
 
     pack();
   }// </editor-fold>//GEN-END:initComponents
+
+  private void jLabelPicturesComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jLabelPicturesComponentResized
+    System.out.println("Resized!");
+  }//GEN-LAST:event_jLabelPicturesComponentResized
 
   private void jTextFieldLatidudeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldLatidudeActionPerformed
     // TODO add your handling code here:
@@ -319,6 +345,7 @@ public class XplaneFotografi extends javax.swing.JFrame {
   private javax.swing.JTextField jTextFieldIpFrom;
   private javax.swing.JTextField jTextFieldLatidude;
   private javax.swing.JTextField jTextFieldLongitude;
+  private javax.swing.JTextField jTextFieldSync;
   private javax.swing.JTextField jTextFieldUdpPort;
   private javax.swing.JTextPane jTextPaneLegend;
   // End of variables declaration//GEN-END:variables
